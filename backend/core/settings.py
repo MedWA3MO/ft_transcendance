@@ -91,7 +91,7 @@ if database_url:
     DOCKER_POSTGRES_HOSTNAME = result.hostname
     DOCKER_POSTGRES_PORT = result.port
 else:
-    POSTGRES_DB = None
+    POSTGRES_DB = None # Add your database name here
     POSTGRES_USER = None
     POSTGRES_PASSWORD = None
     DOCKER_POSTGRES_HOSTNAME = None
