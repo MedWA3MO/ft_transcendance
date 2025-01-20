@@ -174,6 +174,7 @@ INSTALLED_APPS = [
     "chat",
     "connect_four",
     "core",
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -186,6 +187,7 @@ MIDDLEWARE = [
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	"authentication.middleware.TokenVerificationMiddleWare",
+    'corsheaders.middleware.CorsMiddleware',
 	# "authentication.totp.middleware.TwoFactorAuthenticationMiddleware", 2fa middleware
 ]
 
@@ -219,6 +221,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 CORS_ALLOWED_ORIGINS = [
+    "https://ft-transcendance-jbo8eopkp-meds-projects-051dfb05.vercel.app/",
 	"https://" + DOMAIN_NAME,
 ]
 
