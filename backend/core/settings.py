@@ -174,7 +174,6 @@ INSTALLED_APPS = [
     "chat",
     "connect_four",
     "core",
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
