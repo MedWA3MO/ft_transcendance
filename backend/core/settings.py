@@ -29,10 +29,11 @@ os.environ['SSL_CERT_FILE'] = certifi.where()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # all env variables used in the project
+
 ALL_USED_ENV_VARS = [
-	"DOMAIN_NAME",
-	"DOCKER_REDIS_HOSTNAME",
-	"DOCKER_REDIS_PORT",
+    "DOMAIN_NAME",
+    "DOCKER_REDIS_HOSTNAME",
+    "DOCKER_REDIS_PORT",
     "SECRET_KEY",
     "DEBUG",
     "OAUTH42_CLIENT_ID",
@@ -44,12 +45,13 @@ ALL_USED_ENV_VARS = [
     "EMAIL_HOST_USER",
     "EMAIL_HOST_PASSWORD",
     "POSTGRES_DB",
-	"POSTGRES_USER",
-	"POSTGRES_PASSWORD",
+    "POSTGRES_USER",
+    "POSTGRES_PASSWORD",
     "DOCKER_POSTGRES_PORT",
     "DOCKER_POSTGRES_HOSTNAME",
     "DOCKER_BACKEND_PORT",
     "DOCKER_BACKEND_HOSTNAME",
+    "REDIS_URL",  # Add Redis URL here
 ]
 
 missing_vars = [var for var in ALL_USED_ENV_VARS if os.getenv(var) is None]
@@ -58,7 +60,14 @@ if missing_vars:
     logging.error(f"Error: The following environment variables are not set: {', '.join(missing_vars)}")
     sys.exit(1)
 
-
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.getenv("REDIS_URL")],
+        },
+    },
+}
 DOMAIN_NAME = os.getenv("DOMAIN_NAME")
 DOCKER_REDIS_HOSTNAME=os.getenv('DOCKER_REDIS_HOSTNAME')
 DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT')
@@ -204,23 +213,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICATION = 'core.asgi.application'
 
-CHANNEL_LAYERS = {
-	'default': {
-		'BACKEND': 'channels_redis.core.RedisChannelLayer',
-		'CONFIG': {
-			"hosts": [(DOCKER_REDIS_HOSTNAME, DOCKER_REDIS_PORT)],
-		},
-	},
-#  'default': {
-# 		'BACKEND': 'channels_redis.core.RedisChannelLayer',
-# 		'CONFIG': {
-# 			"hosts": [('redis', 6379)],
-# 		},
-# 	},
-	# 'default': {
-	# 	'BACKEND': 'channels.layers.InMemoryChannelLayer',
-	# },
-}
+
 
 #images settings
 MEDIA_URL = 'backend-media/'

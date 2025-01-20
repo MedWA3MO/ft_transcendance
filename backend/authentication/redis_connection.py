@@ -2,9 +2,13 @@ import redis
 import logging
 from django.conf import settings
 
-redis_conn = redis.StrictRedis(host=settings.DOCKER_REDIS_HOSTNAME, port=settings.DOCKER_REDIS_PORT, db=0)
+# Use the Redis URL provided by Render
+redis_url = settings.REDIS_URL  # This will be set in your environment variables
+
+# Initialize Redis connection
+redis_conn = redis.StrictRedis.from_url(redis_url)
 
 try:
-	redis_conn.flushdb()
+    redis_conn.flushdb()
 except redis.ConnectionError:
-	logging.error("\nFailed to connect to Redis.\n")
+    logging.error("\nFailed to connect to Redis.\n")

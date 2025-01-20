@@ -11,13 +11,10 @@ from django.contrib.auth import get_user_model
 REQUIRED_ENV_VARS = [
     "DOCKER_REDIS_HOSTNAME", "DOCKER_REDIS_PORT", "DJANGO_SETTINGS_MODULE",
     "DJANGO_SUPERUSER_USERNAME", "DJANGO_SUPERUSER_EMAIL", "DJANGO_SUPERUSER_PASSWORD",
-    "DOCKER_POSTGRES_PORT", "DOCKER_POSTGRES_HOSTNAME","POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"
+    "DOCKER_POSTGRES_PORT", "DOCKER_POSTGRES_HOSTNAME", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD",
+    "REDIS_URL"  # Add this line
 ]
 
-def check_environment_variables():
-    for var in REQUIRED_ENV_VARS:
-        if var not in os.environ:
-            sys.exit(1)
 
 # Wait for PostgreSQL to be ready
 def wait_for_postgres():
@@ -35,13 +32,14 @@ def wait_for_postgres():
         except OperationalError:
             time.sleep(2)
 
+def check_environment_variables():
+    for var in REQUIRED_ENV_VARS:
+        if var not in os.environ:
+            sys.exit(1)
+
 # Wait for Redis to be ready
 def wait_for_redis():
-    DOCKER_REDIS_HOSTNAME=os.getenv('DOCKER_REDIS_HOSTNAME', '') #REDIS_HOST
-    DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT', '') #REDIS_PORT
-    redis_url = "redis://redis:6379"  # Update default URL
-    if DOCKER_REDIS_HOSTNAME and DOCKER_REDIS_PORT:
-        redis_url = f"redis://{DOCKER_REDIS_HOSTNAME}:{DOCKER_REDIS_PORT}"
+    redis_url = os.getenv('REDIS_URL')  # Fetch from environment variables
     redis_client = Redis.from_url(redis_url)
     for attempt in range(10):
         try:
