@@ -69,7 +69,7 @@ CHANNEL_LAYERS = {
     },
 }
 DOMAIN_NAME = os.getenv("DOMAIN_NAME")
-DOCKER_REDIS_HOSTNAME=os.getenv('DOCKER_REDIS_HOSTNAME')
+DOCKER_REDIS_HOSTNAME="red-cu784drqf0us73e2sr2g"
 DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT')
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
