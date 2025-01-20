@@ -4,14 +4,15 @@ import django
 import time
 from django.core.management import call_command
 from redis import Redis
+from urllib.parse import urlparse
 from psycopg2 import connect, OperationalError
 from django.contrib.auth import get_user_model
 
 # Check for required environment variables
 REQUIRED_ENV_VARS = [
-    "DOCKER_REDIS_HOSTNAME", "DOCKER_REDIS_PORT", "DJANGO_SETTINGS_MODULE",
+    "DJANGO_SETTINGS_MODULE",
     "DJANGO_SUPERUSER_USERNAME", "DJANGO_SUPERUSER_EMAIL", "DJANGO_SUPERUSER_PASSWORD",
-    "DOCKER_POSTGRES_PORT", "DOCKER_POSTGRES_HOSTNAME", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD",
+    "DATABASE_URL",  # Add this line
     "REDIS_URL"  # Add this line
 ]
 
@@ -20,12 +21,17 @@ REQUIRED_ENV_VARS = [
 def wait_for_postgres():
     while True:
         try:
+            database_url = os.getenv("DATABASE_URL")
+            if not database_url:
+                raise ValueError("DATABASE_URL environment variable not set")
+
+            result = urlparse(database_url)
             conn = connect(
-                dbname=os.getenv("POSTGRES_DB"),
-                user=os.getenv("POSTGRES_USER"),
-                password=os.getenv("POSTGRES_PASSWORD"),
-                host=os.getenv("DOCKER_POSTGRES_HOSTNAME"),
-                port=os.getenv("DOCKER_POSTGRES_PORT"),
+                dbname=result.path[1:],  # Remove leading '/'
+                user=result.username,
+                password=result.password,
+                host=result.hostname,
+                port=result.port,
             )
             conn.close()
             break

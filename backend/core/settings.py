@@ -4,6 +4,7 @@ from pathlib import Path
 from datetime import timedelta
 import sys
 import logging
+from urllib.parse import urlparse
 
 load_dotenv()
 import certifi
@@ -32,8 +33,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 ALL_USED_ENV_VARS = [
     "DOMAIN_NAME",
-    "DOCKER_REDIS_HOSTNAME",
-    "DOCKER_REDIS_PORT",
     "SECRET_KEY",
     "DEBUG",
     "OAUTH42_CLIENT_ID",
@@ -84,11 +83,20 @@ OAUTH42_USER_URL = os.getenv("OAUTH42_USER_URL")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
-POSTGRES_DB=os.getenv("POSTGRES_DB")
-POSTGRES_USER=os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD=os.getenv("POSTGRES_PASSWORD")
-DOCKER_POSTGRES_PORT=os.getenv("DOCKER_POSTGRES_PORT")
-DOCKER_POSTGRES_HOSTNAME=os.getenv("DOCKER_POSTGRES_HOSTNAME")
+database_url = os.getenv("DATABASE_URL")
+if database_url:
+    result = urlparse(database_url)
+    POSTGRES_DB = result.path[1:]  # Remove leading '/'
+    POSTGRES_USER = result.username
+    POSTGRES_PASSWORD = result.password
+    DOCKER_POSTGRES_HOSTNAME = result.hostname
+    DOCKER_POSTGRES_PORT = result.port
+else:
+    POSTGRES_DB = None
+    POSTGRES_USER = None
+    POSTGRES_PASSWORD = None
+    DOCKER_POSTGRES_HOSTNAME = None
+    DOCKER_POSTGRES_PORT = None
 
 DOCKER_BACKEND_PORT=os.getenv("DOCKER_BACKEND_PORT") #frontend will use this port to connect to backend
 DOCKER_BACKEND_HOSTNAME=os.getenv("DOCKER_BACKEND_HOSTNAME") #frontend will use this hostname to connect to backend
@@ -109,18 +117,6 @@ AUTH_USER_MODEL = "authentication.CustomUser"
 AUTHENTICATION_BACKENDS = [
 	"django.contrib.auth.backends.ModelBackend",
 ]
-
-# rest framework: simple jwt
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         "rest_framework_simplejwt.authentication.JWTAuthentication",  # or JWTAuthentication if using JWT
-#         'rest_framework.authentication.SessionAuthentication',
-#     ),
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated',
-#     ),
-# }
 
 
 REST_FRAMEWORK = {
