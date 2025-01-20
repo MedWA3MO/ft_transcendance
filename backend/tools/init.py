@@ -57,7 +57,19 @@ def wait_for_redis():
 
 # Initialize Django
 def initialize_django():
+    # Get the absolute path of the current script
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    # Get the project root directory
+    PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 
+    # Add the project root to Python path
+    sys.path.insert(0, PROJECT_ROOT)
+
+    # Print debug information
+    print("Script directory:", SCRIPT_DIR)
+    print("Project root:", PROJECT_ROOT)
+    print("Python path:", sys.path)
+    print("Directory contents:", os.listdir(PROJECT_ROOT))
     # Ensure the environment is set up
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
     # Add this line to verify the path
