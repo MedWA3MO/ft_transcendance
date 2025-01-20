@@ -2,6 +2,8 @@
 import axios from 'axios';
 const baseUrl = process.env.NEXT_PUBLIC_URL;
 
+console.log('Base URL:', process.env.NEXT_PUBLIC_URL);
+
 const axiosInstance = axios.create({
   baseURL: `${baseUrl}/backend`,
   timeout: 5000,
