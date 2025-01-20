@@ -148,6 +148,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 
+export DJANGO_SETTINGS_MODULE=core.settings
 
 
 # Create token expiry time
