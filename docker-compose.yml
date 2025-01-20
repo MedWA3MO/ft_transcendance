@@ -4,15 +4,10 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
     restart: on-failure
-    networks:
-      - ft_transcendence
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - DATABASE_URL=postgresql://pingpongDB_owner:4okV5egXNlhE@ep-rapid-tooth-a9jro8ro.gwc.azure.neon.tech/pingpongDB?sslmode=require
+
 
   redis:
     image: redis:latest

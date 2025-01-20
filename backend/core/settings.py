@@ -8,6 +8,21 @@ import logging
 load_dotenv()
 import certifi
 
+from urllib.parse import urlparse
+
+# Replace the DATABASES section of your settings.py with this
+tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': tmpPostgres.path.replace('/', ''),
+        'USER': tmpPostgres.username,
+        'PASSWORD': tmpPostgres.password,
+        'HOST': tmpPostgres.hostname,
+        'PORT': 5432,
+    }
+}
 
 os.environ['SSL_CERT_FILE'] = certifi.where()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -76,12 +91,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # its is a https r
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = [
-	DOMAIN_NAME,
-    f"{DOCKER_BACKEND_HOSTNAME}",
-]
+ALLOWED_HOSTS = ['*']
 
-
+PORT = os.getenv('PORT', 8000)
 
 AUTH_USER_MODEL = "authentication.CustomUser"
 
@@ -214,20 +226,6 @@ CHANNEL_LAYERS = {
 MEDIA_URL = 'backend-media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': POSTGRES_DB,
-        'USER': POSTGRES_USER,
-        'PASSWORD': POSTGRES_PASSWORD,
-        'HOST': DOCKER_POSTGRES_HOSTNAME,  # Use the service name defined in docker-compose.yml
-        'PORT': DOCKER_POSTGRES_PORT,
-    }
-}
 
 
 CORS_ALLOWED_ORIGINS = [
