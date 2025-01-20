@@ -96,7 +96,7 @@ else:
     POSTGRES_PASSWORD = None
     DOCKER_POSTGRES_HOSTNAME = None
     DOCKER_POSTGRES_PORT = None
-
+REDIS_URL = os.getenv("REDIS_URL")  # Add Redis URL here
 DOCKER_BACKEND_PORT=os.getenv("DOCKER_BACKEND_PORT") #frontend will use this port to connect to backend
 DOCKER_BACKEND_HOSTNAME=os.getenv("DOCKER_BACKEND_HOSTNAME") #frontend will use this hostname to connect to backend
 
