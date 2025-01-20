@@ -172,6 +172,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "chat",
     "connect_four",
+    "core",
 ]
 
 MIDDLEWARE = [
