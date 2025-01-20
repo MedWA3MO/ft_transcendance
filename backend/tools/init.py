@@ -60,6 +60,11 @@ def initialize_django():
 
     # Ensure the environment is set up
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+    # Add this line to verify the path
+    print(f"Python path: {sys.path}")
+    print(f"Current directory: {os.getcwd()}")
+    print(f"Settings module: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
+    
     django.setup() # This will load the Django settings
 
     wait_for_postgres()

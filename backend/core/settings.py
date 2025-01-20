@@ -9,7 +9,6 @@ from urllib.parse import urlparse
 load_dotenv()
 import certifi
 
-from urllib.parse import urlparse
 
 # Replace the DATABASES section of your settings.py with this
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
