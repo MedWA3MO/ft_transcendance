@@ -6,13 +6,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from authentication.utils import set_jwt_cookies
 from rest_framework.views import APIView
 import logging
-# from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny
 from authentication.totp.utils import validate_totp
 
 logger = logging.getLogger(__name__)
 
 class SignUp(APIView):
-	# permission_classes = [AllowAny]
+	permission_classes = [AllowAny]
     def post(self, request, format=None):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
