@@ -107,7 +107,12 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # its is a https r
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [    "ft-transcendance-j1d7pedyg-meds-projects-051dfb05.vercel.app",  
+"ft-transcendance-j1d7pedyg-meds-projects-051dfb05",  
+"ft-transcendance-j1d7pedyg-meds-projects-051dfb05.vercel",  
+    "ft-transcendance-wjhi.onrender",
+    "ft-transcendance-wjhi.onrender.com",
+    "ft-transcendance-wjhi",  ]
 
 PORT = os.getenv('PORT', 8000)
 
