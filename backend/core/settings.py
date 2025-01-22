@@ -186,7 +186,6 @@ MIDDLEWARE = [
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	"authentication.middleware.TokenVerificationMiddleWare",
-    'corsheaders.middleware.CorsMiddleware',
 	# "authentication.totp.middleware.TwoFactorAuthenticationMiddleware", 2fa middleware
 ]
 
@@ -220,8 +219,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 CORS_ALLOWED_ORIGINS = [
-    "https://ft-transcendance-jbo8eopkp-meds-projects-051dfb05.vercel.app/",
-	"https://" + DOMAIN_NAME,
+    "https://ft-transcendance-j1d7pedyg-meds-projects-051dfb05.vercel.app",  
+    "https://ft-transcendance-wjhi.onrender.com",  
+    f"https://{DOMAIN_NAME}",
 ]
 
 
@@ -278,3 +278,32 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False  # Keep this False for security
+CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Change to INFO in production
+            'propagate': True,
+        },
+    },
+}
