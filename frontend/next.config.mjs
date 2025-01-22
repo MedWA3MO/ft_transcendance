@@ -5,7 +5,7 @@ const nextConfig = {
     return [
       {
         source: '/backend/:path*',
-        destination: 'https://ft-transcendance-wjhi.onrender.com:8000/:path*',
+        destination: 'https://ft-transcendance-wjhi.onrender.com/:path*',
       },
     ];
   },
