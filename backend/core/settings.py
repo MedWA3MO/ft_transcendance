@@ -107,9 +107,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # its is a https r
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = [    "ft-transcendance-j1d7pedyg-meds-projects-051dfb05.vercel.app",  
-"ft-transcendance-j1d7pedyg-meds-projects-051dfb05",  
-"ft-transcendance-j1d7pedyg-meds-projects-051dfb05.vercel",  
+ALLOWED_HOSTS = [    
+    "ft-transcendance-1.onrender.com",  
+    "ft-transcendance-1.onrender",
+    "ft-transcendance-1",  
     "ft-transcendance-wjhi.onrender",
     "ft-transcendance-wjhi.onrender.com",
     "ft-transcendance-wjhi",  ]
@@ -225,8 +226,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 CORS_ALLOWED_ORIGINS = [
-    "https://ft-transcendance-j1d7pedyg-meds-projects-051dfb05.vercel.app",  
+    "https://ft-transcendance-1.onrender.com",  
+    "https://ft-transcendance-1.onrender",
+    "https://ft-transcendance-1",    
     "https://ft-transcendance-wjhi.onrender.com",  
+    "https://ft-transcendance-wjhi.onrender",  
+    "https://ft-transcendance-wjhi",  
     f"https://{DOMAIN_NAME}",
 ]
 
