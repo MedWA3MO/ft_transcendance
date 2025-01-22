@@ -113,7 +113,8 @@ ALLOWED_HOSTS = [
     "ft-transcendance-1",  
     "ft-transcendance-wjhi.onrender",
     "ft-transcendance-wjhi.onrender.com",
-    "ft-transcendance-wjhi",  ]
+    "ft-transcendance-wjhi", 
+    '*', ]
 
 PORT = os.getenv('PORT', 8000)
 
@@ -175,7 +176,6 @@ INSTALLED_APPS = [
     "authentication.apps.AuthenticationConfig",
     "rest_framework",
     "rest_framework_simplejwt",
-    "corsheaders",
     "rest_framework_simplejwt.token_blacklist",
     "chat",
     "connect_four",
@@ -183,7 +183,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-	"corsheaders.middleware.CorsMiddleware",
     'whitenoise.middleware.WhiteNoiseMiddleware',
 	'django.middleware.security.SecurityMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
@@ -225,15 +224,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 
-CORS_ALLOWED_ORIGINS = [
-    "https://ft-transcendance-1.onrender.com",  
-    "https://ft-transcendance-1.onrender",
-    "https://ft-transcendance-1",    
-    "https://ft-transcendance-wjhi.onrender.com",  
-    "https://ft-transcendance-wjhi.onrender",  
-    "https://ft-transcendance-wjhi",  
-    f"https://{DOMAIN_NAME}",
-]
+CORS_ALLOWED_ORIGINS = ['*']
 
 
 CORS_ALLOW_METHODS = [
