@@ -57,6 +57,8 @@ missing_vars = [var for var in ALL_USED_ENV_VARS if os.getenv(var) is None]
 if missing_vars:
     logging.error(f"Error: The following environment variables are not set: {', '.join(missing_vars)}")
     sys.exit(1)
+    
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 CHANNEL_LAYERS = {
     'default': {
@@ -70,7 +72,6 @@ CHANNEL_LAYERS = {
 DOMAIN_NAME = os.getenv("DOMAIN_NAME")
 DOCKER_REDIS_HOSTNAME="red-cu784drqf0us73e2sr2g"
 DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT')
-SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 # Set your 42 OAuth credentials
 OAUTH42_CLIENT_ID = os.getenv("OAUTH42_CLIENT_ID")
