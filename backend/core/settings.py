@@ -57,7 +57,7 @@ missing_vars = [var for var in ALL_USED_ENV_VARS if os.getenv(var) is None]
 if missing_vars:
     logging.error(f"Error: The following environment variables are not set: {', '.join(missing_vars)}")
     sys.exit(1)
-    
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 CHANNEL_LAYERS = {
@@ -65,10 +65,11 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [os.getenv("REDIS_URL")],
-            "symmetric_encryption_keys": [SECRET_KEY],
         },
     },
 }
+
+
 DOMAIN_NAME = os.getenv("DOMAIN_NAME")
 DOCKER_REDIS_HOSTNAME="red-cu784drqf0us73e2sr2g"
 DOCKER_REDIS_PORT=os.getenv('DOCKER_REDIS_PORT')
@@ -136,17 +137,17 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-	"AUTH_COOKIE": "jwt",
-	"AUTH_COOKIE_SECURE": True,  # Change to True in production
-	"AUTH_COOKIE_HTTP_ONLY": True,
-	"AUTH_COOKIE_PATH": "/",
-	"AUTH_COOKIE_SAMESITE": "Strict",  # Change to 'Strict' or 'None' as needed
-	"ROTATE_REFRESH_TOKENS": True,
-	'BLACKLIST_AFTER_ROTATION': True,
-	'SIGNING_KEY': SECRET_KEY,
-	"ALGORITHM": "HS256",
-	"ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # 1 hour
-	"REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
+    "AUTH_COOKIE": "jwt",
+    "AUTH_COOKIE_SECURE": False,  # Temporarily set to False to debug
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "Lax",  # Change from Strict to Lax
+    "ROTATE_REFRESH_TOKENS": True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'SIGNING_KEY': SECRET_KEY,
+    "ALGORITHM": "HS256",
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
@@ -167,6 +168,7 @@ DJANGO_SETTINGS_MODULE= 'core.settings'
 PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
 
 INSTALLED_APPS = [
+    'corsheaders',
     'daphne',
     'channels',
     'django.contrib.admin',
@@ -188,17 +190,17 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Add this at the top
+    'django.middleware.security.SecurityMiddleware',
+    'authentication.middleware.TokenVerificationMiddleWare',  # Move this up
     'authentication.simplemiddleware.simple_middleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-	'django.middleware.security.SecurityMiddleware',
-	'django.contrib.sessions.middleware.SessionMiddleware',
-	'django.middleware.common.CommonMiddleware',
-	'django.middleware.csrf.CsrfViewMiddleware',
-	'django.contrib.auth.middleware.AuthenticationMiddleware',
-	'django.contrib.messages.middleware.MessageMiddleware',
-	'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	"authentication.middleware.TokenVerificationMiddleWare",
-	# "authentication.totp.middleware.TwoFactorAuthenticationMiddleware", 2fa middleware
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -287,7 +289,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True  # Keep this False for security
+# CORS_ALLOW_ALL_ORIGINS = True  # Keep this False for security
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 
 CORS_ALLOW_HEADERS = [
