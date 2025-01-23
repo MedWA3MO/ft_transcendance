@@ -63,6 +63,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [os.getenv("REDIS_URL")],
+            "symmetric_encryption_keys": [SECRET_KEY],
         },
     },
 }
@@ -145,6 +146,9 @@ SIMPLE_JWT = {
 	"ALGORITHM": "HS256",
 	"ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # 1 hour
 	"REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # 1 week
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
 
 
@@ -223,9 +227,10 @@ ASGI_APPLICATION = 'core.asgi.application'
 MEDIA_URL = 'backend-media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-
-CORS_ALLOWED_ORIGINS = ['*']
+CORS_ALLOWED_ORIGINS = [
+    "https://ft-transcendance-1.onrender.com",
+    "https://ft-transcendance-wjhi.onrender.com"
+]
 
 
 CORS_ALLOW_METHODS = [
