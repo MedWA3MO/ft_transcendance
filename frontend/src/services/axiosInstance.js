@@ -1,8 +1,7 @@
 'use client';
 import axios from 'axios';
-const baseUrl = process.env.NEXT_PUBLIC_URL;
 
-console.log('Base URL:', process.env.NEXT_PUBLIC_URL);
+const baseUrl = process.env.NEXT_PUBLIC_URL;
 
 const axiosInstance = axios.create({
   baseURL: `${baseUrl}/backend`,
@@ -13,18 +12,15 @@ const axiosInstance = axios.create({
   }
 });
 
-// Request interceptor with enhanced logging and OAuth handling
+// Request interceptor
 axiosInstance.interceptors.request.use(
   config => {
-    // Remove any double slashes in the URL except after http(s):
     config.url = config.url.replace(/([^:]\/)\/+/g, "$1");
-    
-    // If the request data is FormData, remove the Content-Type header
+
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
     }
 
-    // Add cache control headers for OAuth endpoints
     if (config.url.includes('auth/callback')) {
       config.headers = {
         ...config.headers,
@@ -32,51 +28,34 @@ axiosInstance.interceptors.request.use(
         'Pragma': 'no-cache',
         'Expires': '0'
       };
-
     }
-    
     return config;
   },
-  error => {
-
-    return Promise.reject(error);
-  }
+  error => Promise.reject(error)
 );
 
-// Response interceptor with enhanced error handling
-axiosInstance.interceptors.response.use(
-  response => {
+// Response interceptor with error handling and retry logic
+let isRetrying = false;
 
-    return response;
-  },
-  error => {
-
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
-      // Don't redirect if already on login page
-      if (window.location.pathname !== '/login') {
-        // Use window.location.replace to prevent adding to history
-        window.location.replace('/login');
-      }
-    }
-
-    return Promise.reject({
-      ...error,
-      message: error.response?.data?.Error || error.message
-    });
-  }
-);
-
-// Add retry logic for failed requests
 axiosInstance.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
 
-    // Only retry GET requests and not for OAuth endpoints
+    // Handle 401 Unauthorized
+    if (error.response?.status === 401 && !isRetrying) {
+      isRetrying = true;
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.replace('/login');
+      }
+      isRetrying = false;
+      return Promise.reject(error);
+    }
+
+    // Retry logic for 500+ errors
     if (
-      !originalRequest._retry && 
-      originalRequest.method === 'get' && 
+      !originalRequest._retry &&
+      originalRequest.method === 'get' &&
       !originalRequest.url.includes('auth/callback') &&
       error.response?.status >= 500
     ) {
@@ -88,7 +67,10 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject({
+      ...error,
+      message: error.response?.data?.Error || error.message
+    });
   }
 );
 
