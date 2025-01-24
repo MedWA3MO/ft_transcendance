@@ -40,8 +40,9 @@ class TokenVerificationMiddleWare:
 			'/backend/2fa/verify/user',
 			'/backend/ws/',  # Add WebSocket paths
 			'/ws/',  # Add WebSocket paths
-		]
-
+			'/ws/global/',
+			'/ws/four_game/',
+			'/ws/online/',]
 		request.customUser = AnonymousUser()
 
 		if request.path.startswith("/backend/admin") or request.path in unrestricted_paths:
