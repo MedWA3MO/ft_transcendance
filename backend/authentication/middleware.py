@@ -149,28 +149,32 @@ class UserOnlineStatusMiddleware(BaseMiddleware):
 			raise TokenError("token is not valid")
 
 class RequestLoggingMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-        self.logger = logging.getLogger(__name__)
+	def __init__(self, get_response):
+		self.get_response = get_response
+		self.logger = logging.getLogger(__name__)
 
-    def __call__(self, request):
-        # Pre-processing
-        self.logger.info(f"""
-        Request details:
-        Path: {request.path}
-        Method: {request.method}
-        Content-Type: {request.content_type}
-        User: {request.user}
-        Body: {request.body if request.method == 'POST' else 'N/A'}
-        """)
+	def __call__(self, request):
+		# Pre-processing
+		self.logger.info(f"""
+		Request details:
+		Path: {request.path}
+		Method: {request.method}
+		Content-Type: {request.content_type}
+		Headers: {dict(request.headers)}
+		Body: {request.body.decode() if request.method == 'POST' else 'N/A'}
+		""")
 
-        response = self.get_response(request)
-
-        # Post-processing
-        self.logger.info(f"""
-        Response details:
-        Status code: {response.status_code}
-        Content-Type: {response.get('Content-Type')}
-        """)
-
-        return response
+		try:
+			response = self.get_response(request)
+			
+			# Post-processing
+			self.logger.info(f"""
+			Response details:
+			Status code: {response.status_code}
+			Content-Type: {response.get('Content-Type')}
+			""")
+			
+			return response
+		except Exception as e:
+			self.logger.error(f"Error in middleware: {str(e)}")
+			raise

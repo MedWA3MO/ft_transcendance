@@ -193,7 +193,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'authentication.middleware.RequestLoggingMiddleware', 
     'corsheaders.middleware.CorsMiddleware',  # Add this at the top
     'django.middleware.security.SecurityMiddleware',
     'authentication.middleware.TokenVerificationMiddleWare',  # Move this up
@@ -203,6 +202,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'authentication.middleware.RequestLoggingMiddleware', 
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
