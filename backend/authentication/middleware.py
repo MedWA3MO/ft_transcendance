@@ -14,19 +14,37 @@ import fnmatch
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
+
+User = get_user_model()
+
 class TokenVerificationMiddleWare:
 	def __init__(self, get_response):
 		self.get_response = get_response
 		self.logger = logging.getLogger(__name__)
 
 	def __call__(self, request):
-		if request.method == 'OPTIONS':
-			response = self.get_response(request)
-			return response
-
+		# Log request details
 		self.logger.info(f"Processing request path: {request.path}")
 		self.logger.debug(f"Available cookies: {request.COOKIES}")
 		self.logger.info(f"Headers: {request.headers}")
+		self.logger.info(f"Method: {request.method}")
+
+		# For profile data path, add extra logging
+		if request.path == '/backend/profile/data':
+			self.logger.info("=== Processing Profile Data Request ===")
+			self.logger.info(f"Request Method: {request.method}")
+			self.logger.info(f"Content Type: {request.content_type}")
+			self.logger.info(f"Request Headers: {dict(request.headers)}")
+			self.logger.info(f"Cookies Present: {list(request.COOKIES.keys())}")
+			if request.method == 'POST':
+				try:
+					self.logger.info(f"Request Body: {request.body.decode('utf-8')}")
+				except:
+					self.logger.info("Could not decode request body")
+
+		if request.method == 'OPTIONS':
+			response = self.get_response(request)
+			return response
 
 		unrestricted_paths = [
 			"/",
@@ -41,25 +59,34 @@ class TokenVerificationMiddleWare:
 			"/backend/forgot-password",
 			'/backend/2fa/verify/user/', 
 			'/backend/2fa/verify/user',
-			'/backend/ws/',  # Add WebSocket paths
-			'/ws/',  # Add WebSocket paths
+			'/backend/ws/',
+			'/ws/',
 			'/ws/global/',
 			'/ws/four_game/',
 			'/ws/online/',
 			"/backend/notifications/unread",
 			"/backend/profile/data",
-			"/backend/searchItems/*",  # Add wildcard pattern
+			"/backend/searchItems/*",
 		]
 		request.customUser = AnonymousUser()
 
+		# Check if path is unrestricted
 		if request.path.startswith("/backend/admin") or any(fnmatch.fnmatch(request.path, pattern) for pattern in unrestricted_paths):
 			self.logger.info(f"Unrestricted path: {request.path}")
+			if request.path == '/backend/profile/data':
+				self.logger.info("Profile data path accessed as unrestricted")
 			return self.get_response(request)
 
+		# Token verification
 		refresh_token = request.COOKIES.get("jwt")
 		access_token = request.COOKIES.get("jwt-access")
 
+		if request.path == '/backend/profile/data':
+			self.logger.info(f"Refresh token present: {bool(refresh_token)}")
+			self.logger.info(f"Access token present: {bool(access_token)}")
+
 		if not refresh_token:
+			self.logger.warning("No refresh token found in request")
 			return JsonResponse(
 				{"error": "refresh token not found or invalid"},
 				status=status.HTTP_401_UNAUTHORIZED,
@@ -70,10 +97,17 @@ class TokenVerificationMiddleWare:
 			self.logger.info("Successfully validated refresh token")
 			request.unique_key = refresh_token_obj.payload.get("channel_name")
 
+			if request.path == '/backend/profile/data':
+				self.logger.info(f"Channel name from token: {request.unique_key}")
+
 			if not access_token:
+				self.logger.info("No access token found, generating new one")
 				new_access_token = refresh_token_obj.access_token
 				user_id = AccessToken(new_access_token).get("user_id")
 				request.customUser = User.objects.get(id=user_id)
+
+				if request.path == '/backend/profile/data':
+					self.logger.info(f"Generated new access token for user ID: {user_id}")
 
 				response = self.get_response(request)
 				response.set_cookie(
@@ -89,11 +123,19 @@ class TokenVerificationMiddleWare:
 			try:
 				user_id = AccessToken(access_token).get("user_id")
 				request.customUser = User.objects.get(id=user_id)
+
+				if request.path == '/backend/profile/data':
+					self.logger.info(f"Using existing access token for user ID: {user_id}")
+
 				return self.get_response(request)
-			except (TokenError, User.DoesNotExist):
+			except (TokenError, User.DoesNotExist) as e:
+				self.logger.warning(f"Token error or user not found: {str(e)}")
 				new_access_token = refresh_token_obj.access_token
 				user_id = AccessToken(new_access_token).get("user_id")
 				request.customUser = User.objects.get(id=user_id)
+
+				if request.path == '/backend/profile/data':
+					self.logger.info(f"Generated replacement access token for user ID: {user_id}")
 
 				response = self.get_response(request)
 				response.set_cookie(
@@ -105,9 +147,15 @@ class TokenVerificationMiddleWare:
 					max_age=api_settings.ACCESS_TOKEN_LIFETIME.total_seconds(),
 				)
 				return response
-		except TokenError:
-			response = JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
-			self.logger.error(f"Token validation failed: {str(TokenError)}")
+
+		except TokenError as e:
+			self.logger.error(f"Token validation failed: {str(e)}")
+			if request.path == '/backend/profile/data':
+				self.logger.error(f"Profile data request failed due to token error: {str(e)}")
+			response = JsonResponse(
+				{"error": "refresh token invalid"},
+				status=status.HTTP_401_UNAUTHORIZED
+			)
 			response.delete_cookie("jwt")
 			response.delete_cookie("jwt-access")
 			return response
