@@ -25,8 +25,8 @@ class TokenVerificationMiddleWare:
 
 		self.logger.info(f"Processing request path: {request.path}")
 		self.logger.debug(f"Available cookies: {request.COOKIES}")
-        self.logger.info(f"Headers: {request.headers}")
-		
+		self.logger.info(f"Headers: {request.headers}")
+
 		unrestricted_paths = [
 			"/backend/auth/login/42", 
 			"/backend/auth/callback/42",
@@ -45,7 +45,7 @@ class TokenVerificationMiddleWare:
 			'/ws/four_game/',
 			'/ws/online/',
 			"/backend/notifications/unread",
-			]
+		]
 		request.customUser = AnonymousUser()
 
 		if request.path.startswith("/backend/admin") or request.path in unrestricted_paths:
