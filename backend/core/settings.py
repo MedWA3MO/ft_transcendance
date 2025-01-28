@@ -193,7 +193,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'your_app.middleware.RequestLoggingMiddleware', 
+    'authentication.middleware.RequestLoggingMiddleware', 
     'corsheaders.middleware.CorsMiddleware',  # Add this at the top
     'django.middleware.security.SecurityMiddleware',
     'authentication.middleware.TokenVerificationMiddleWare',  # Move this up
@@ -341,7 +341,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
-        'your_app': {  # Replace with your app name
+        'authentication': {  # Replace with your app name
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
