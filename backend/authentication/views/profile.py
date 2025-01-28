@@ -13,8 +13,16 @@ logger = logging.getLogger(__name__)
 
 class UserProfile(APIView):
 	def post(self, request):
-		user = UserSerializer(request.customUser).data
-		return Response({"user": user}, status=status.HTTP_200_OK)
+		try:
+			user = UserSerializer(request.customUser).data
+			return Response({"user": user}, status=status.HTTP_200_OK)
+		except Exception as e:
+			logger.error(f"Profile data error: {str(e)}")
+            logger.exception("Full traceback:")
+            return Response(
+                {"error": "Internal server error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class UpdateProfile(APIView):
 	def post(self, request):

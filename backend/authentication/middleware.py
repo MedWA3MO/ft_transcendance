@@ -9,6 +9,7 @@ from channels.exceptions import DenyConnection
 from django.http import JsonResponse
 from rest_framework import status
 import logging
+import fnmatch
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -28,6 +29,7 @@ class TokenVerificationMiddleWare:
 		self.logger.info(f"Headers: {request.headers}")
 
 		unrestricted_paths = [
+			"/",
 			"/backend/auth/login/42", 
 			"/backend/auth/callback/42",
 			"/backend/signup", 
@@ -46,10 +48,11 @@ class TokenVerificationMiddleWare:
 			'/ws/online/',
 			"/backend/notifications/unread",
 			"/backend/profile/data",
+			"/backend/searchItems/*",  # Add wildcard pattern
 		]
 		request.customUser = AnonymousUser()
 
-		if request.path.startswith("/backend/admin") or request.path in unrestricted_paths:
+		if request.path.startswith("/backend/admin") or any(fnmatch.fnmatch(request.path, pattern) for pattern in unrestricted_paths):
 			self.logger.info(f"Unrestricted path: {request.path}")
 			return self.get_response(request)
 
@@ -144,3 +147,30 @@ class UserOnlineStatusMiddleware(BaseMiddleware):
 			return user
 		except (TokenError, User.DoesNotExist):
 			raise TokenError("token is not valid")
+
+class RequestLoggingMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.logger = logging.getLogger(__name__)
+
+    def __call__(self, request):
+        # Pre-processing
+        self.logger.info(f"""
+        Request details:
+        Path: {request.path}
+        Method: {request.method}
+        Content-Type: {request.content_type}
+        User: {request.user}
+        Body: {request.body if request.method == 'POST' else 'N/A'}
+        """)
+
+        response = self.get_response(request)
+
+        # Post-processing
+        self.logger.info(f"""
+        Response details:
+        Status code: {response.status_code}
+        Content-Type: {response.get('Content-Type')}
+        """)
+
+        return response
