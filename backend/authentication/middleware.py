@@ -45,6 +45,7 @@ class TokenVerificationMiddleWare:
 			'/ws/four_game/',
 			'/ws/online/',
 			"/backend/notifications/unread",
+			"/backend/profile/data",
 		]
 		request.customUser = AnonymousUser()
 
