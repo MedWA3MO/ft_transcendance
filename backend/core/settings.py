@@ -65,6 +65,9 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [os.getenv("REDIS_URL")],
+            "symmetric_encryption_keys": [SECRET_KEY],
+            "capacity": 1500,
+            "expiry": 10,
         },
     },
 }
@@ -138,10 +141,10 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "AUTH_COOKIE": "jwt",
-    "AUTH_COOKIE_SECURE": False,  # Temporarily set to False to debug
+    "AUTH_COOKIE_SECURE": True,  # Temporarily set to False to debug
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": "Lax",  # Change from Strict to Lax
+    "AUTH_COOKIE_SAMESITE": "None",  # Change from Strict to Lax
     "ROTATE_REFRESH_TOKENS": True,
     'BLACKLIST_AFTER_ROTATION': True,
     'SIGNING_KEY': SECRET_KEY,
@@ -235,6 +238,9 @@ CORS_ALLOWED_ORIGINS = [
     "https://ft-transcendance-wjhi.onrender.com"
 ]
 
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.onrender\.com$",
+]
 
 CORS_ALLOW_METHODS = [
 	'DELETE',

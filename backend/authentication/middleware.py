@@ -25,7 +25,8 @@ class TokenVerificationMiddleWare:
 
 		self.logger.info(f"Processing request path: {request.path}")
 		self.logger.debug(f"Available cookies: {request.COOKIES}")
-
+        self.logger.info(f"Headers: {request.headers}")
+		
 		unrestricted_paths = [
 			"/backend/auth/login/42", 
 			"/backend/auth/callback/42",
@@ -42,7 +43,9 @@ class TokenVerificationMiddleWare:
 			'/ws/',  # Add WebSocket paths
 			'/ws/global/',
 			'/ws/four_game/',
-			'/ws/online/',]
+			'/ws/online/',
+			"/backend/notifications/unread",
+			]
 		request.customUser = AnonymousUser()
 
 		if request.path.startswith("/backend/admin") or request.path in unrestricted_paths:
@@ -60,6 +63,7 @@ class TokenVerificationMiddleWare:
 
 		try:
 			refresh_token_obj = RefreshToken(refresh_token)
+			self.logger.info("Successfully validated refresh token")
 			request.unique_key = refresh_token_obj.payload.get("channel_name")
 
 			if not access_token:
@@ -99,6 +103,7 @@ class TokenVerificationMiddleWare:
 				return response
 		except TokenError:
 			response = JsonResponse({"error": "refresh token invalid"}, status=status.HTTP_401_UNAUTHORIZED)
+			self.logger.error(f"Token validation failed: {str(TokenError)}")
 			response.delete_cookie("jwt")
 			response.delete_cookie("jwt-access")
 			return response
